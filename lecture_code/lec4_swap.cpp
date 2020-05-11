@@ -42,7 +42,7 @@ int main() {
 
 	char *husband = strdup("Fred");
 	char *wife = strdup("Wilma");
-	swap(&husband, &wife, sizeof(char*));
+	swap(&husband, wife, sizeof(char*));
 	cout << (*husband) << " " << (*wife) << endl;
 
 
