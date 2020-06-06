@@ -39,6 +39,37 @@ static void readGrammar(ifstream& infile, map<string, Definition>& grammar)
   }
 }
 
+vector<string> getRandomSentence(vector<string>::iterator itr1,
+	       vector<string>::iterator itr2, 
+		map<string, Definition>& grammar)
+{	
+	
+	vector<string> ans;
+	for (vector<string>::iterator itr = itr1; itr != itr2; ++itr) {
+		map<string, Definition>::iterator it = grammar.find(*itr);
+		if (it != grammar.end()) {
+			Production p = (it->second).getRandomProduction();
+			vector<string> subAns = getRandomSentence(p.begin(), p.end(), grammar);
+			for (int i = 0; i < subAns.size(); ++i) {
+				ans.push_back(subAns[i]);
+			}
+
+		}
+		else {
+			ans.push_back(*itr);
+		}
+	}
+	return ans;
+}
+
+void runGeneration(Production prod, map<string, Definition>& grammar) {
+  vector<string> ans = getRandomSentence(prod.begin(),prod.end(), grammar);
+  for (int i = 0; i < ans.size(); ++i) {
+	  cout << ans[i] << " ";
+  }
+  cout << endl;
+}
+
 /**
  * Performs the rudimentary error checking needed to confirm that
  * the client provided a grammar file.  It then continues to
@@ -74,6 +105,19 @@ int main(int argc, char *argv[])
   readGrammar(grammarFile, grammar);
   cout << "The grammar file called \"" << argv[1] << "\" contains "
        << grammar.size() << " definitions." << endl;
-  
+ 
+  // get nonterminal
+  cout << "nonterminal in this file:" << endl;
+  for (map<string, Definition>::iterator itr = grammar.begin(); itr != grammar.end(); ++itr) {
+	  cout << itr->first << endl;
+  }
+  cout << "---------------" << endl;
+
+  Production prod = (grammar["<start>"]).getRandomProduction();
+  for (int i = 0; i < 3; ++i) {
+	cout << "version " << i+1 << " ------------" << endl;
+	cout << endl;
+	runGeneration(prod, grammar);
+  }
   return 0;
 }
